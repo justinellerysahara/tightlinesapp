@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TightLines - AI Fly Fishing</title>
+    <meta name="description" content="AI-powered fly fishing recommendations">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="TightLines">
+    <meta name="theme-color" content="#2563eb">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%232563eb'/><stop offset='100%25' style='stop-color:%231d4ed8'/></linearGradient><linearGradient id='water' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%2306b6d4'/><stop offset='100%25' style='stop-color:%230891b2'/></linearGradient></defs><rect width='180' height='180' fill='url(%23bg)' rx='28'/><circle cx='90' cy='130' r='35' fill='url(%23water)' opacity='0.8'/><path d='M60 60 L120 60 L140 80 L120 100 L60 100 Z' fill='%23fbbf24' stroke='%23f59e0b' stroke-width='2'/><circle cx='90' cy='80' r='8' fill='%23dc2626'/><path d='M90 72 Q95 65 105 70 Q100 75 95 72' fill='%23059669' stroke='%23047857' stroke-width='1'/></svg>">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/json,{%22name%22:%22TightLines%20-%20AI%20Fly%20Fishing%22,%22short_name%22:%22TightLines%22,%22description%22:%22AI-powered%20fly%20fishing%20recommendations%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f8fafc%22,%22theme_color%22:%22%232563eb%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='bg192' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%232563eb'/><stop offset='100%25' style='stop-color:%231d4ed8'/></linearGradient><linearGradient id='water192' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%2306b6d4'/><stop offset='100%25' style='stop-color:%230891b2'/></linearGradient></defs><rect width='192' height='192' fill='url(%23bg192)' rx='30'/><circle cx='96' cy='140' r='38' fill='url(%23water192)' opacity='0.8'/><path d='M64 64 L128 64 L150 86 L128 108 L64 108 Z' fill='%23fbbf24' stroke='%23f59e0b' stroke-width='2'/><circle cx='96' cy='86' r='9' fill='%23dc2626'/><path d='M96 76 Q102 68 114 74 Q108 80 102 76' fill='%23059669' stroke='%23047857' stroke-width='1'/></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22},{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='bg512' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%232563eb'/><stop offset='100%25' style='stop-color:%231d4ed8'/></linearGradient><linearGradient id='water512' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%2306b6d4'/><stop offset='100%25' style='stop-color:%230891b2'/></linearGradient></defs><rect width='512' height='512' fill='url(%23bg512)' rx='80'/><circle cx='256' cy='370' r='100' fill='url(%23water512)' opacity='0.8'/><path d='M170 170 L342 170 L400 230 L342 290 L170 290 Z' fill='%23fbbf24' stroke='%23f59e0b' stroke-width='6'/><circle cx='256' cy='230' r='24' fill='%23dc2626'/><path d='M256 200 Q270 180 305 195 Q285 215 270 200' fill='%23059669' stroke='%23047857' stroke-width='3'/></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .app {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #ffffff;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 44px 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .logo-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 16px 12px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab:hover {
+            color: #2563eb;
+            background: #f8fafc;
+        }
+
+        .nav-tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .content {
+            padding: 0;
+            background: #f8fafc;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 200px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .card-icon.blue { background: #3b82f6; }
+        .card-icon.purple { background: #8b5cf6; }
+        .card-icon.green { background: #10b981; }
+        .card-icon.orange { background: #f59e0b; }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .upload-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .upload-area {
+            width: 100%;
+            height: 120px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .upload-subtext {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .analysis-results {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .analysis-results.show {
+            display: block;
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .analysis-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .confidence-badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .analysis-item {
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .analysis-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .analysis-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1f2937;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .fly-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .fly-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .fly-item:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .fly-info {
+            flex: 1;
+        }
+
+        .fly-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .fly-type {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .fly-favorite {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+
+        .fly-favorite:hover {
+            background: #fef3c7;
+            border-color: #fbbf24;
+            color: #d97706;
+        }
+
+        .fly-favorite.active {
+            background: #fef3c7;
+            border-color: #fbbf24;
+            color: #d97706;
+        }
+
+        .conditions-card {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .conditions-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .condition-item {
+            font-size: 14px;
+            margin-bottom: 6px;
+            opacity: 0.95;
+        }
+
+        .spot-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .spot-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .spot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .spot-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .spot-rating {
+            font-size: 14px;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .spot-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .spot-species {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .spot-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-easy { background: #dcfce7; color: #166534; }
+        .difficulty-moderate { background: #fef3c7; color: #92400e; }
+        .difficulty-challenging { background: #fee2e2; color: #991b1b; }
+
+        .navigate-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .navigate-btn:hover {
+            background: #2563eb;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 428px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <div class="logo">TightLines</div>
+                    <div class="logo-subtitle">AI Fly Fishing</div>
+                </div>
+                <div class="header-actions">
+                    <button class="header-btn">⚙</button>
+                    <button class="header-btn">☰</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('identify')">Identify</button>
+            <button class="nav-tab" onclick="showTab('spots')">Spots</button>
+            <button class="nav-tab" onclick="showTab('offline')">Offline</button>
+        </div>
+
+        <div class="content">
+            <div id="identify-tab" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon blue">AI</div>
+                        <div class="card-title">Water Analysis</div>
+                    </div>
+                    
+                    <div class="upload-options">
+                        <div class="upload-area" onclick="document.getElementById('camera-input').click()">
+                            <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handlePhotoUpload(event)">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-text">Take Photo</div>
+                            <div class="upload-subtext">Use camera</div>
+                        </div>
+                        
+                        <div class="upload-area" onclick="document.getElementById('gallery-input').click()" style="margin-top: 12px;">
+                            <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                            <div class="upload-icon">🖼️</div>
+                            <div class="upload-text">Choose Photo</div>
+                            <div class="upload-subtext">From gallery</div>
+                        </div>
+                    </div>
+                    
+                    <div id="photo-preview" style="display: none; margin-top: 16px;">
+                        <img id="captured-image" style="width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    </div>
+
+                    <div id="analysis-results" class="analysis-results">
+                        <div class="analysis-header">
+                            <div class="analysis-title">Analysis Complete</div>
+                            <div class="confidence-badge">95% confident</div>
+                        </div>
+                        
+                        <div class="analysis-grid">
+                            <div class="analysis-item">
+                                <div class="analysis-label">Water Type</div>
+                                <div class="analysis-value">River</div>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="analysis-label">Clarity</div>
+                                <div class="analysis-value">Clear</div>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="analysis-label">Weather</div>
+                                <div class="analysis-value">Sunny</div>
+                            </div>
+                            <div class="analysis-item">
+                                <div class="analysis-label">Season</div>
+                                <div class="analysis-value">Spring</div>
+                            </div>
+                        </div>
+                        
+                        <div class="success-message">
+                            <span>✓</span>
+                            <span>Conditions auto-detected and applied</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon purple">⚙</div>
+                        <div class="card-title">Manual Input</div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Season</label>
+                            <select class="form-select" onchange="updateRecommendations()">
+                                <option value="spring">Spring</option>
+                                <option value="summer">Summer</option>
+                                <option value="fall">Fall</option>
+                                <option value="winter">Winter</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Water Type</label>
+                            <select class="form-select" onchange="updateRecommendations()">
+                                <option value="river">River</option>
+                                <option value="lake">Lake</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Clarity</label>
+                            <select class="form-select" onchange="updateRecommendations()">
+                                <option value="clear">Clear</option>
+                                <option value="murky">Murky</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Weather</label>
+                            <select class="form-select" onchange="updateRecommendations()">
+                                <option value="sunny">Sunny</option>
+                                <option value="cloudy">Cloudy</option>
+                                <option value="rainy">Rainy</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon green">★</div>
+                        <div class="card-title">Recommended Flies</div>
+                    </div>
+                    
+                    <div class="fly-list">
+                        <div class="fly-item">
+                            <div class="fly-info">
+                                <div class="fly-name">Blue Winged Olive</div>
+                                <div class="fly-type">Dry Fly</div>
+                            </div>
+                            <div class="fly-favorite" onclick="toggleFavorite(this)">☆</div>
+                        </div>
+                        <div class="fly-item">
+                            <div class="fly-info">
+                                <div class="fly-name">Pheasant Tail Nymph</div>
+                                <div class="fly-type">Nymph</div>
+                            </div>
+                            <div class="fly-favorite" onclick="toggleFavorite(this)">☆</div>
+                        </div>
+                        <div class="fly-item">
+                            <div class="fly-info">
+                                <div class="fly-name">March Brown</div>
+                                <div class="fly-type">Dry Fly</div>
+                            </div>
+                            <div class="fly-favorite" onclick="toggleFavorite(this)">☆</div>
+                        </div>
+                        <div class="fly-item">
+                            <div class="fly-info">
+                                <div class="fly-name">Woolly Bugger</div>
+                                <div class="fly-type">Streamer</div>
+                            </div>
+                            <div class="fly-favorite" onclick="toggleFavorite(this)">☆</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conditions-card">
+                    <div class="conditions-title">Current Conditions</div>
+                    <div>
+                        <div class="condition-item">Season: Spring</div>
+                        <div class="condition-item">Water: River (clear)</div>
+                        <div class="condition-item">Weather: Sunny</div>
+                        <div class="condition-item">Time: 2:30 PM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="spots-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon blue">📍</div>
+                        <div class="card-title">Nearby Waters</div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">Kicking Horse River</div>
+                            <div class="spot-rating">★ 4.6</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>River</div>
+                            <div>2.1 km away</div>
+                        </div>
+                        <div class="spot-species">
+                            <strong>Species:</strong> Rainbow Trout, Bull Trout, Mountain Whitefish<br>
+                            <strong>Season:</strong> May to October
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-moderate">Moderate</div>
+                            <button class="navigate-btn" onclick="navigateToSpot('Kicking Horse River')">Navigate</button>
+                        </div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">Columbia River</div>
+                            <div class="spot-rating">★ 4.4</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>River</div>
+                            <div>3.8 km away</div>
+                        </div>
+                        <div class="spot-species">
+                            <strong>Species:</strong> Rainbow Trout, Bull Trout, Kokanee<br>
+                            <strong>Season:</strong> Year-round
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-easy">Easy</div>
+                            <button class="navigate-btn" onclick="navigateToSpot('Columbia River')">Navigate</button>
+                        </div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">Blaeberry River</div>
+                            <div class="spot-rating">★ 4.7</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>River</div>
+                            <div>8.2 km away</div>
+                        </div>
+                        <div class="spot-species">
+                            <strong>Species:</strong> Bull Trout, Rainbow Trout<br>
+                            <strong>Season:</strong> June to September
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-challenging">Challenging</div>
+                            <button class="navigate-btn" onclick="navigateToSpot('Blaeberry River')">Navigate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="offline-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon orange">⬇</div>
+                        <div class="card-title">Download Regions</div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">BC Rocky Mountains</div>
+                            <div class="spot-rating">25 MB</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>47 fishing spots</div>
+                            <div>Complete offline maps</div>
+                        </div>
+                        <div class="spot-species">
+                            Includes Kicking Horse, Columbia, and Blaeberry rivers with fly recommendations and species info.
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-easy">Ready</div>
+                            <button class="navigate-btn" onclick="downloadRegion('BC Rocky Mountains')">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">Columbia Valley</div>
+                            <div class="spot-rating">18 MB</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>32 fishing spots</div>
+                            <div>Lakes and rivers</div>
+                        </div>
+                        <div class="spot-species">
+                            Windermere, Fairmont, and Canal Flats area with complete offline functionality.
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-easy">Ready</div>
+                            <button class="navigate-btn" onclick="downloadRegion('Columbia Valley')">Download</button>
+                        </div>
+                    </div>
+                    
+                    <div class="spot-card">
+                        <div class="spot-header">
+                            <div class="spot-name">Glacier National Park</div>
+                            <div class="spot-rating">32 MB</div>
+                        </div>
+                        <div class="spot-details">
+                            <div>28 fishing spots</div>
+                            <div>Alpine lakes & streams</div>
+                        </div>
+                        <div class="spot-species">
+                            Remote alpine fishing locations with detailed access maps and regulations.
+                        </div>
+                        <div class="spot-actions">
+                            <div class="difficulty-badge difficulty-challenging">Ready</div>
+                            <button class="navigate-btn" onclick="downloadRegion('Glacier National Park')">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            <div class="loading-text">Analyzing water conditions...</div>
+        </div>
+    </div>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+                    const CACHE_NAME = 'tightlines-v1';
+                    const urlsToCache = ['/'];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => response || fetch(event.request))
+                        );
+                    });
+                `))
+                .then(registration => console.log('SW registered'))
+                .catch(error => console.log('SW registration failed'));
+            });
+        }
+
+        // Simple tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            var tabs = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Remove active from nav tabs
+            var navTabs = document.querySelectorAll('.nav-tab');
+            for (var i = 0; i < navTabs.length; i++) {
+                navTabs[i].classList.remove('active');
+            }
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate nav tab
+            event.target.classList.add('active');
+        }
+
+        // Photo upload handler
+        function handlePhotoUpload(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // Show photo preview
+                var preview = document.getElementById('photo-preview');
+                var img = document.getElementById('captured-image');
+                img.src = e.target.result;
+                preview.style.display = 'block';
+                
+                // Start analysis
+                analyzePhoto();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Photo analysis
+        function analyzePhoto() {
+            var loading = document.getElementById('loading-overlay');
+            var results = document.getElementById('analysis-results');
+            
+            loading.classList.add('show');
+            
+            setTimeout(function() {
+                loading.classList.remove('show');
+                results.classList.add('show');
+                
+                // Update form selects based on "analysis"
+                var seasonSelect = document.querySelector('select[onchange="updateRecommendations()"]');
+                var waterSelect = document.querySelectorAll('select[onchange="updateRecommendations()"]')[1];
+                var claritySelect = document.querySelectorAll('select[onchange="updateRecommendations()"]')[2];
+                var weatherSelect = document.querySelectorAll('select[onchange="updateRecommendations()"]')[3];
+                
+                // Mock analysis results
+                var mockResults = ['spring', 'river', 'clear', 'sunny'];
+                seasonSelect.value = mockResults[0];
+                waterSelect.value = mockResults[1];
+                claritySelect.value = mockResults[2];
+                weatherSelect.value = mockResults[3];
+                
+                updateRecommendations();
+            }, 2000);
+        }
+
+        // Photo upload simulation (fallback)
+        function simulatePhotoUpload() {
+            document.getElementById('camera-input').click();
+        }
+
+        // Toggle favorite
+        function toggleFavorite(element) {
+            if (element.classList.contains('active')) {
+                element.classList.remove('active');
+                element.textContent = '☆';
+            } else {
+                element.classList.add('active');
+                element.textContent = '★';
+            }
+        }
+
+        // Update recommendations (placeholder)
+        function updateRecommendations() {
+            // Simple feedback for now
+            console.log('Recommendations updated');
+        }
+
+        // Navigate to spot
+        function navigateToSpot(spotName) {
+            alert('Opening navigation to ' + spotName);
+        }
+
+        // Download region
+        function downloadRegion(regionName) {
+            alert('Starting download for ' + regionName);
+        }
+    </script>
+</body>
+</html>
